@@ -2,6 +2,7 @@ const express = require('express');
 const { body, param } = require('express-validator');
 const userController = require('../controllers/user.controller');
 const validateRequest = require('../middlewares/validation.middleware');
+const authMiddleware = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ router.get('/', userController.getUsers);
 router.get(
   '/:id',
   [
+    authMiddleware,
     param('id').isMongoId().withMessage('Invalid user ID'),
     validateRequest,
   ],
@@ -22,6 +24,7 @@ router.get(
 router.post(
   '/',
   [
+    authMiddleware,
     body('name').notEmpty().withMessage('Name is required'),
     body('email').isEmail().withMessage('Email must be valid'),
     body('age').optional().isInt({ min: 0 }).withMessage('Age must be a positive integer'),
