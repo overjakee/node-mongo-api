@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
+const { signToken } = require('../utils/jwt.util');  // นำเข้า signToken
 
 exports.register = async (req, res, next) => {
   try {
@@ -28,7 +28,8 @@ exports.login = async (req, res, next) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
+    // ใช้ signToken แทน jwt.sign
+    const token = signToken({ userId: user._id }, { expiresIn: process.env.JWT_EXPIRES_IN });
 
     res.json({ message: 'Login successful', token });
   } catch (err) {
